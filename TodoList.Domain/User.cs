@@ -13,5 +13,6 @@ namespace TodoList.Domain
         public string Password { get; set; }
         public string Email { get; set; }
         public string Fio { get; set; }
+        public List<Category> Categories { get; set; }
     }
 }

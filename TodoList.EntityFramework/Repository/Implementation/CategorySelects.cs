@@ -8,54 +8,17 @@ using TodoList.EntityFramework.Repository.Interfaces;
 
 namespace TodoList.EntityFramework.Repository.Implementation
 {
-    public class UserSelects : IUserSelects
+    public class CategorySelects : ICategorySelects
     {
-        //создание пользователя с проверкой уникальности логина и почты
-        public bool CreateUser(User userNew)
+        public bool CreateCategory(Category categoryNew)
         {
             using (TodoListContext db = new TodoListContext())
             {
                 try
                 {
-                    var user = db.Users.FirstOrDefault(u => u.Login == userNew.Login);
-                    if (user == null)
+                    if (categoryNew.UserId != 0)
                     {
-                        user = db.Users.FirstOrDefault(u => u.Email == userNew.Email);
-                        if (user == null)
-                        {
-                            db.Users.Add(userNew);
-                            db.SaveChanges();
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-        }
-        //поиск пользователя по id
-        public User GetUserById(int id) 
-        {
-            using (TodoListContext db = new TodoListContext())
-            {
-                var user = db.Users.FirstOrDefault(u => u.Id == id);
-                return user;
-            }
-        }
-        //изменение пользователя. При удачном изменении возвращает true
-        public bool ChangeUser(User userNew)
-        {
-            using (TodoListContext db = new TodoListContext())
-            {
-                try
-                {
-                    var user = db.Users.FirstOrDefault(u => u.Id == userNew.Id);
-                    if (user != null)
-                    {
-                        user = userNew;
+                        db.Categories.Add(categoryNew);
                         db.SaveChanges();
                         return true;
                     }
@@ -67,16 +30,32 @@ namespace TodoList.EntityFramework.Repository.Implementation
                 }
             }
         }
-        public bool DeleteUserById(int id)
+        public Category GetCategoryById(int id)
+        {
+            using (TodoListContext db = new TodoListContext())
+            {
+                var category = db.Categories.FirstOrDefault(c => c.Id == id);
+                return category;
+            }
+        }
+        public List<Category> GetCategoriesByUserId(int userId)
+        {
+            using (TodoListContext db = new TodoListContext())
+            {
+                var categories = db.Categories.Where(c=>c.UserId==userId).ToList();
+                return categories;
+            }
+        }
+        public bool ChangeCategory(Category categoryNew)
         {
             using (TodoListContext db = new TodoListContext())
             {
                 try
                 {
-                    var user = db.Users.FirstOrDefault(u => u.Id == id);
-                    if (user != null)
+                    Category category = db.Categories.FirstOrDefault(c => c.Id == categoryNew.Id);
+                    if (category != null)
                     {
-                        db.Users.Remove(user);
+                        category = categoryNew;
                         db.SaveChanges();
                         return true;
                     }
@@ -88,6 +67,26 @@ namespace TodoList.EntityFramework.Repository.Implementation
                 }
             }
         }
-
+        public bool DeleteCategoryById(int id)
+        {
+            using (TodoListContext db = new TodoListContext())
+            {
+                try
+                {
+                    Category category = db.Categories.FirstOrDefault(c => c.Id == id);
+                    if (category != null)
+                    {
+                        db.Categories.Remove(category);
+                        db.SaveChanges();
+                        return true;
+                    }
+                    return false;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
     }
 }

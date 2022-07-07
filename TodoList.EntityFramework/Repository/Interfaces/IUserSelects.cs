@@ -9,6 +9,9 @@ namespace TodoList.EntityFramework.Repository.Interfaces
 {
     public interface IUserSelects
     {
+        public bool CreateUser(User userNew);
         public User GetUserById(int id);
+        public bool ChangeUser(User userNew);
+        public bool DeleteUserById(int id);
     }
 }
