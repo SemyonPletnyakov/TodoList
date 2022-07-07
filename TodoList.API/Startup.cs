@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -6,11 +7,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using TodoList.Application.Sercises.Implementation;
+using TodoList.Application.Sercises.Interfaces;
 
 namespace TodoList.API
 {
@@ -89,8 +95,10 @@ namespace TodoList.API
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
 
-                c.EnableAnnotations();
+                //c.EnableAnnotations();
             });
+
+            services.AddTransient<IUserServiñe, UserServiñe>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

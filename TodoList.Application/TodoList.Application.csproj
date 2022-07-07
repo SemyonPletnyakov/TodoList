@@ -8,4 +8,10 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TodoList.Common\TodoList.Common.csproj" />
+    <ProjectReference Include="..\TodoList.Domain\TodoList.Domain.csproj" />
+    <ProjectReference Include="..\TodoList.EntityFramework\TodoList.EntityFramework.csproj" />
+  </ItemGroup>
+
 </Project>

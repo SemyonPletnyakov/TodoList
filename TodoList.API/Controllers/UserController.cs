@@ -15,9 +15,9 @@ namespace TodoList.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IUserServise _userServise;
+        private readonly IUserServiсe _userServise;
 
-        public UserController(IUserServise userServise)
+        public UserController(IUserServiсe userServise)
         {
             _userServise = userServise;
         }
@@ -34,7 +34,7 @@ namespace TodoList.API.Controllers
         public async Task<UserDTO> GetUser(int id)
         {
             var jwt = Request.Headers.GetJwt();
-            return new UserDTO();
+            return _userServise.GetUserInfo(id);
         }
     }
 }

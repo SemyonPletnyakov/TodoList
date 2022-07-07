@@ -1,15 +1,36 @@
-﻿using System;
+﻿using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using TodoList.Application.DTO;
 using TodoList.Application.Sercises.Interfaces;
+using TodoList.Domain;
+using TodoList.EntityFramework.Repository.Interfaces;
+using TodoList.EntityFramework.Repository.Implementation;
 
 namespace TodoList.Application.Sercises.Implementation
 {
-    public class UserServise : IUserServise
+    public class UserServiсe : IUserServiсe
     {
+        public UserDTO GetUserInfo(int id)
+        {
+            IUserSelects userSelects = new UserSelects();
+            User user = userSelects.GetUserById(id);
+            UserDTO userDTO = new UserDTO()
+            {
+                Id = user.Id,
+                Login = user.Login,
+                Password = user.Password,
+                Email = user.Email,
+                Fio = user.Fio
+            };
+            return userDTO;
+        }
+        /*
         private string GetUserIdFromJwt(string jwtString)
         {
             try
@@ -49,7 +70,7 @@ namespace TodoList.Application.Sercises.Implementation
                 return false;
             }
 
-        }]
+        }
         private TokenValidationParameters GetValidationParameters()
         {
             var autOp = _configuration.GetSection("Auth").Get<AuthOptions>();
@@ -64,6 +85,6 @@ namespace TodoList.Application.Sercises.Implementation
                 IssuerSigningKey = autOp.GetSymmetricSecurityKey(),
                 ValidateIssuerSigningKey = true,
             };
-        }
+        }*/
     }
 }
