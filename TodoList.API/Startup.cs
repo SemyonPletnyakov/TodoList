@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using TodoList.Application.Sercises.Implementation;
 using TodoList.Application.Sercises.Interfaces;
+using TodoList.Common;
 
 namespace TodoList.API
 {
@@ -25,9 +26,11 @@ namespace TodoList.API
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            autOp = Configuration.GetSection("Auth").Get<AuthOptions>();
         }
 
         public IConfiguration Configuration { get; }
+        public AuthOptions autOp { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)

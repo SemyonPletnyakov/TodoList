@@ -13,5 +13,6 @@ namespace TodoList.EntityFramework.Repository.Interfaces
         public User GetUserById(int id);
         public bool ChangeUser(User userNew);
         public bool DeleteUserById(int id);
+        public int? FindUserIdByLoginAndPassword(string login, string password);
     }
 }

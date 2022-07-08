@@ -88,6 +88,25 @@ namespace TodoList.EntityFramework.Repository.Implementation
                 }
             }
         }
+        public int? FindUserIdByLoginAndPassword(string login, string password)
+        {
+            using (TodoListContext db = new TodoListContext())
+            {
+                try
+                {
+                    var user = db.Users.FirstOrDefault(u => u.Login == login && u.Password == password);
+                    if (user != null)
+                    {
+                        return user.Id;
+                    }
+                    return null;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
 
     }
 }
