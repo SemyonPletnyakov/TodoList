@@ -11,7 +11,7 @@ namespace TodoList.Application.Serviсes.Interfaces
     {
         public CategoryDTO CreateCategory(CategoryDTO categoryDTO, string jwt);
         public bool ChangeCategory(CategoryDTO categoryDTO);
-        public bool DaleteCategory(int id);
+        public bool DeleteCategory(int id);
         public CategoryDTO GetCategory(int id);
         public List<CategoryDTO> GetCategotyListByJwt(string jwt);
     }
