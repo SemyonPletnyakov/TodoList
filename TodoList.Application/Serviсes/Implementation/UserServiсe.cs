@@ -25,13 +25,102 @@ namespace TodoList.Application.Sercises.Implementation
         {
             _configuration = conf;
         }
-        public UserDTO GetUserInfo(int id)
+        
+        public JwtDTO LoginUser(string login, string password)
         {
+            try
+            {
+                IUserSelects userSelects = new UserSelects();
+                int? userId = userSelects.FindUserIdByLoginAndPassword(login, password);
+                if (userId != null)
+                {
+                    return GetJwtDTOById(userId);
+                }
+                else
+                    return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public JwtDTO RegisterUser(UserDTO userDTO)
+        {
+            try
+            {
+                User user = new User()
+                {
+                    Login = userDTO.Login,
+                    Password = userDTO.Password,
+                    Email = userDTO.Email,
+                    Fio = userDTO.Fio
+                };
+                IUserSelects userSelects = new UserSelects();
+                if (userSelects.CreateUser(user))
+                {
+                    int? userId = user.Id;
+                    if (userId != null)
+                    {
+                        CategorySelects categorySelects = new CategorySelects();
+                        Category category = new Category()
+                        {
+                            Name = "Без категории",
+                            UserId = userId.Value
+                        };
+                        categorySelects.CreateCategory(category);
+                        return GetJwtDTOById(userId);
+                    }
+                }
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        private JwtDTO GetJwtDTOById(int? id)
+        {
+            try
+            {
+                var claims = new List<Claim>
+                {
+                new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid", id.ToString())
+                };
+                ClaimsIdentity claimsIdentity =
+                    new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+
+                var autOp = _configuration.GetSection("Auth").Get<AuthOptions>();
+                var now = DateTime.UtcNow;
+                // создаем JWT-токен
+                var jwt = new JwtSecurityToken(
+                        issuer: autOp.Issuer,
+                        audience: autOp.Audience,
+                        notBefore: now,
+                        claims: claimsIdentity.Claims,
+                        expires: now.Add(TimeSpan.FromMinutes(autOp.Lifetime)),
+                        signingCredentials: new SigningCredentials(autOp.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+                var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+                JwtDTO response = new JwtDTO()
+                {
+                    access_token = encodedJwt,
+                    username = claimsIdentity.Name
+                };
+                return response;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public UserDTO GetUserInfoByJwt(string jwt)
+        {
+            int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
             IUserSelects userSelects = new UserSelects();
-            User user = userSelects.GetUserById(id);
+            User user = userSelects.GetUserById(userId);
             UserDTO userDTO = new UserDTO()
             {
-                Id = user.Id,
                 Login = user.Login,
                 Password = user.Password,
                 Email = user.Email,
@@ -39,7 +128,34 @@ namespace TodoList.Application.Sercises.Implementation
             };
             return userDTO;
         }
-        
+        public bool ChangeUserByJwt(UserDTO userDTO, string jwt)
+        {
+            int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
+            User userNew = new User()
+            {
+                Id = userId,
+                Login = userDTO.Login,
+                Password = userDTO.Password,
+                Email = userDTO.Email,
+                Fio = userDTO.Fio
+            };
+            IUserSelects userSelects = new UserSelects();
+            if (userSelects.ChangeUser(userNew))
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool DeleteUserByJwt(string jwt)
+        {
+            int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
+            IUserSelects userSelects = new UserSelects();
+            if (userSelects.DeleteUserById(userId))
+            {
+                return true;
+            }
+            return false;
+        }
         private string GetUserIdFromJwt(string jwtString)
         {
             try
@@ -94,93 +210,6 @@ namespace TodoList.Application.Sercises.Implementation
                 IssuerSigningKey = autOp.GetSymmetricSecurityKey(),
                 ValidateIssuerSigningKey = true,
             };
-        }
-        public JwtDTO LoginUser(string login, string password)
-        {
-            try
-            {
-                IUserSelects userSelects = new UserSelects();
-                int? userId = userSelects.FindUserIdByLoginAndPassword(login, password);
-                if (userId != null)
-                {
-                    return GetJwtDTOById(userId);
-                }
-                else
-                    return null;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-        public JwtDTO RegisterUser(UserDTO userDTO)
-        {
-            try
-            {
-                User user = new User()
-                {
-                    Login = userDTO.Login,
-                    Password = userDTO.Password,
-                    Email = userDTO.Email,
-                    Fio = userDTO.Fio
-                };
-                IUserSelects userSelects = new UserSelects();
-                if (userSelects.CreateUser(user))
-                {
-                    int? userId = userSelects.FindUserIdByLoginAndPassword(userDTO.Login, userDTO.Password);
-                    if (userId != null)
-                    {
-                        CategorySelects categorySelects = new CategorySelects();
-                        Category category = new Category()
-                        {
-                            Name = "Без категории",
-                            UserId = userId.Value
-                        };
-                        categorySelects.CreateCategory(category);
-                        return GetJwtDTOById(userId);
-                    }
-                }
-                return null;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-        private JwtDTO GetJwtDTOById(int? id)
-        {
-            try
-            {
-                var claims = new List<Claim>
-                {
-                new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid", id.ToString())
-                };
-                ClaimsIdentity claimsIdentity =
-                    new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-
-                var autOp = _configuration.GetSection("Auth").Get<AuthOptions>();
-                var now = DateTime.UtcNow;
-                // создаем JWT-токен
-                var jwt = new JwtSecurityToken(
-                        issuer: autOp.Issuer,
-                        audience: autOp.Audience,
-                        notBefore: now,
-                        claims: claimsIdentity.Claims,
-                        expires: now.Add(TimeSpan.FromMinutes(autOp.Lifetime)),
-                        signingCredentials: new SigningCredentials(autOp.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-                var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-                JwtDTO response = new JwtDTO()
-                {
-                    access_token = encodedJwt,
-                    username = claimsIdentity.Name
-                };
-                return response;
-            }
-            catch
-            {
-                return null;
-            }
         }
     }
 }

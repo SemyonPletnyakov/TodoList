@@ -9,8 +9,10 @@ namespace TodoList.Application.Sercises.Interfaces
 {
     public interface IUserServiсe
     {
-        public UserDTO GetUserInfo(int id);
         public JwtDTO LoginUser(string login, string password);
         public JwtDTO RegisterUser(UserDTO userDTO);
+        public UserDTO GetUserInfoByJwt(string jwt);
+        public bool ChangeUserByJwt(UserDTO userDTO, string jwt);
+        public bool DeleteUserByJwt(string jwt);
     }
 }
