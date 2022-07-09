@@ -9,8 +9,8 @@ namespace TodoList.Application.Sercises.Interfaces
 {
     public interface IUserServiсe
     {
-        public JwtDTO LoginUser(string login, string password);
-        public JwtDTO RegisterUser(UserDTO userDTO);
+        public string LoginUser(string login, string password);
+        public string RegisterUser(UserDTO userDTO);
         public UserDTO GetUserInfoByJwt(string jwt);
         public bool ChangeUserByJwt(UserDTO userDTO, string jwt);
         public bool DeleteUserByJwt(string jwt);

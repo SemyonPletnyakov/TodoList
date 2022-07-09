@@ -88,15 +88,15 @@ namespace TodoList.API
                         }
                     });
 
-                c.SwaggerDoc("v1", new OpenApiInfo
+                /*c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Mfc.Health.Corner.Api",
+                    Title = "TodoList.Api",
                     Version = "v1",
-                    Description = "Mfc.Health.Corner API"
+                    Description = "TodoList API"
                 });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
+                c.IncludeXmlComments(xmlPath);*/
 
                 //c.EnableAnnotations();
             });

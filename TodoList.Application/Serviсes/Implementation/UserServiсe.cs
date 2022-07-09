@@ -26,7 +26,7 @@ namespace TodoList.Application.Sercises.Implementation
             _configuration = conf;
         }
         
-        public JwtDTO LoginUser(string login, string password)
+        public string LoginUser(string login, string password)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace TodoList.Application.Sercises.Implementation
                 return null;
             }
         }
-        public JwtDTO RegisterUser(UserDTO userDTO)
+        public string RegisterUser(UserDTO userDTO)
         {
             try
             {
@@ -78,13 +78,13 @@ namespace TodoList.Application.Sercises.Implementation
                 return null;
             }
         }
-        private JwtDTO GetJwtDTOById(int? id)
+        private string GetJwtDTOById(int? id)
         {
             try
             {
                 var claims = new List<Claim>
                 {
-                new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid", id.ToString())
+                    new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid", id.ToString())
                 };
                 ClaimsIdentity claimsIdentity =
                     new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
@@ -101,12 +101,12 @@ namespace TodoList.Application.Sercises.Implementation
                         signingCredentials: new SigningCredentials(autOp.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
                 var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-                JwtDTO response = new JwtDTO()
+                /*JwtDTO response = new JwtDTO()
                 {
                     access_token = encodedJwt,
                     username = claimsIdentity.Name
-                };
-                return response;
+                };*/
+                return "Bearer " + encodedJwt;
             }
             catch
             {

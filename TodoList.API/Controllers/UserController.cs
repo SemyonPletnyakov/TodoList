@@ -13,7 +13,7 @@ namespace TodoList.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : Controller
     {
         private readonly IUserServiсe _userServise;
 
@@ -27,14 +27,18 @@ namespace TodoList.API.Controllers
         public async Task<UserDTO> GetUser()
         {
             var jwt = Request.Headers.GetJwt();
-            return new UserDTO();
+            return _userServise.GetUserInfoByJwt(jwt);
         }
-
-        [HttpGet("{id}")]
+        [HttpPost]
+        public async Task<IActionResult> RegisterUser(UserDTO userDTO)
+        {
+            return Json(_userServise.RegisterUser(userDTO));
+        }
+        /*[HttpGet("{id}")]
         public async Task<UserDTO> GetUser(int id)
         {
             var jwt = Request.Headers.GetJwt();
-            return _userServise.GetUserInfo(id);
-        }
+            return _userServise.GetUserInfoByJwt(jwt);
+        }*/
     }
 }
