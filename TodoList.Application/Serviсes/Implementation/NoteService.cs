@@ -140,7 +140,7 @@ namespace TodoList.Application.Serviсes.Implementation
             }
             return null;
         }
-        public bool ChangeNote(NoteDTO noteDTO)
+        public NoteDTO ChangeNote(NoteDTO noteDTO)
         {
             Note note = new Note()
             {
@@ -151,7 +151,9 @@ namespace TodoList.Application.Serviсes.Implementation
                 Status = false,
                 CategoryId = noteDTO.CategoryId
             };
-            return noteSelects.ChangeNote(note);
+            if(noteSelects.ChangeNote(note))
+                return noteDTO;
+            return null;
         }
         public bool ChangeStatusNote(int id, bool status)
         {

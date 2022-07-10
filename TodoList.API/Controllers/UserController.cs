@@ -22,23 +22,35 @@ namespace TodoList.API.Controllers
             _userServise = userServise;
         }
 
-        [Authorize]
-        [HttpGet]
-        public async Task<UserDTO> GetUser()
-        {
-            var jwt = Request.Headers.GetJwt();
-            return _userServise.GetUserInfoByJwt(jwt);
-        }
+
         [HttpPost]
-        public async Task<IActionResult> RegisterUser(UserDTO userDTO)
+        public async Task<IActionResult> Register(UserDTO userDTO)
         {
-            return Json(_userServise.RegisterUser(userDTO));
+            return Json(_userServise.AddUser(userDTO));
         }
-        /*[HttpGet("{id}")]
-        public async Task<UserDTO> GetUser(int id)
+
+        //для админа
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserInfo(int id)
         {
-            var jwt = Request.Headers.GetJwt();
-            return _userServise.GetUserInfoByJwt(jwt);
-        }*/
+            return Json(_userServise.GetUserById(id));
+        }
+
+        //для админа
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> ChangeUser(UserDTO userDTO)
+        {
+            return Json(_userServise.ChangeUser(userDTO));
+        }
+
+        //для админа
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            return Json(_userServise.DeleteUserById(id));
+        }
     }
 }
