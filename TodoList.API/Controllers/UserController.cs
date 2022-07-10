@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TodoList.Application.DTO;
-using TodoList.Application.Sercises.Interfaces;
+using TodoList.Application.Serviсes.Interfaces;
 using TodoList.Common.Extension;
 
 namespace TodoList.API.Controllers

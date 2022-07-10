@@ -10,82 +10,72 @@ namespace TodoList.EntityFramework.Repository.Implementation
 {
     public class CategorySelects : ICategorySelects
     {
+        private TodoListContext db;
+        public CategorySelects()
+        {
+            db = new TodoListContext();
+        }
         public bool CreateCategory(Category categoryNew)
         {
-            using (TodoListContext db = new TodoListContext())
+            try
             {
-                try
+                if (categoryNew.UserId != 0)
                 {
-                    if (categoryNew.UserId != 0)
-                    {
-                        db.Categories.Add(categoryNew);
-                        db.SaveChanges();
-                        return true;
-                    }
-                    return false;
+                    db.Categories.Add(categoryNew);
+                    db.SaveChanges();
+                    return true;
                 }
-                catch
-                {
-                    return false;
-                }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
         public Category GetCategoryById(int id)
         {
-            using (TodoListContext db = new TodoListContext())
-            {
-                var category = db.Categories.FirstOrDefault(c => c.Id == id);
-                return category;
-            }
+            var category = db.Categories.FirstOrDefault(c => c.Id == id);
+            return category;
         }
         public List<Category> GetCategoriesByUserId(int userId)
         {
-            using (TodoListContext db = new TodoListContext())
-            {
-                var categories = db.Categories.Where(c=>c.UserId==userId).ToList();
-                return categories;
-            }
+            var categories = db.Categories.Where(c=>c.UserId==userId).ToList();
+            return categories;
         }
         public bool ChangeCategory(Category categoryNew)
         {
-            using (TodoListContext db = new TodoListContext())
+            try
             {
-                try
+                Category category = db.Categories.FirstOrDefault(c => c.Id == categoryNew.Id);
+                if (category != null)
                 {
-                    Category category = db.Categories.FirstOrDefault(c => c.Id == categoryNew.Id);
-                    if (category != null)
-                    {
-                        category = categoryNew;
-                        db.SaveChanges();
-                        return true;
-                    }
-                    return false;
+                    category.Name = categoryNew.Name;
+                    db.SaveChanges();
+                    return true;
                 }
-                catch
-                {
-                    return false;
-                }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
         public bool DeleteCategoryById(int id)
         {
-            using (TodoListContext db = new TodoListContext())
+            try
             {
-                try
+                Category category = db.Categories.FirstOrDefault(c => c.Id == id);
+                if (category != null)
                 {
-                    Category category = db.Categories.FirstOrDefault(c => c.Id == id);
-                    if (category != null)
-                    {
-                        db.Categories.Remove(category);
-                        db.SaveChanges();
-                        return true;
-                    }
-                    return false;
+                    db.Categories.Remove(category);
+                    db.SaveChanges();
+                    return true;
                 }
-                catch
-                {
-                    return false;
-                }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

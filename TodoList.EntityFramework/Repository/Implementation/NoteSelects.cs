@@ -9,92 +9,103 @@ using TodoList.EntityFramework.Repository.Interfaces;
 
 namespace TodoList.EntityFramework.Repository.Implementation
 {
+
     public class NoteSelects : INoteSelects
     {
+        private TodoListContext db;
+        public NoteSelects()
+        {
+            db = new TodoListContext();
+        }
         public bool CreateNote(Note noteNew)
         {
-            using (TodoListContext db = new TodoListContext())
+            try
             {
-                try
+                if (noteNew.CategoryId != 0)
                 {
-                    if (noteNew.CategoryId != 0)
-                    {
-                        db.Notes.Add(noteNew);
-                        db.SaveChanges();
-                        return true;
-                    }
-                    return false;
+                    db.Notes.Add(noteNew);
+                    db.SaveChanges();
+                    return true;
                 }
-                catch
-                {
-                    return false;
-                }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
         public Note GetNoteById(int id)
         {
-            using (TodoListContext db = new TodoListContext())
-            {
-                var note = db.Notes.FirstOrDefault(c => c.Id == id);
-                return note;
-            }
+            var note = db.Notes.FirstOrDefault(c => c.Id == id);
+            return note;
         }
         public List<Note> GetNoteByCategoryId(int categoryId)
         {
-            using (TodoListContext db = new TodoListContext())
-            {
-                var notes = db.Notes.Where(c => c.CategoryId == categoryId).ToList();
-                return notes;
-            }
+            var notes = db.Notes.Where(c => c.CategoryId == categoryId).ToList();
+            return notes;
         }
         public List<Note> GetNoteByUserId(int userId)
         {
-            using (TodoListContext db = new TodoListContext())
-            {
-                var notes = db.Notes.Include(n=>n.Category).Where(c => c.Category.UserId == userId).ToList();
-                return notes;
-            }
+            var notes = db.Notes.Include(n=>n.Category).Where(c => c.Category.UserId == userId).ToList();
+            return notes;
         }
         public bool ChangeNote(Note noteNew)
         {
-            using (TodoListContext db = new TodoListContext())
+            try
             {
-                try
+                Note note = db.Notes.FirstOrDefault(c => c.Id == noteNew.Id);
+                if (note != null)
                 {
-                    Note note = db.Notes.FirstOrDefault(c => c.Id == noteNew.Id);
-                    if (note != null)
-                    {
-                       note = noteNew;
-                        db.SaveChanges();
-                        return true;
-                    }
-                    return false;
+                    note.Text = noteNew.Text;
+                    note.Heading = noteNew.Heading;
+                    //note.CreateDate = note.CreateDate; дату создания не измением
+                    note.Deadline = noteNew.Deadline;
+                    note.Status = noteNew.Status;
+                    note.CategoryId = noteNew.CategoryId;
+                    db.SaveChanges();
+                    return true;
                 }
-                catch
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public bool ChangeStatusNote(int id, bool status)
+        {
+            try
+            {
+                Note note = db.Notes.FirstOrDefault(c => c.Id == id);
+                if (note != null)
                 {
-                    return false;
+                    note.Status = status;
+                    db.SaveChanges();
+                    return true;
                 }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
         public bool DeleteNoteById(int id)
         {
-            using (TodoListContext db = new TodoListContext())
+            try
             {
-                try
+                Note note = db.Notes.FirstOrDefault(c => c.Id == id);
+                if (note != null)
                 {
-                    Note note = db.Notes.FirstOrDefault(c => c.Id == id);
-                    if (note != null)
-                    {
-                        db.Notes.Remove(note);
-                        db.SaveChanges();
-                        return true;
-                    }
-                    return false;
+                    db.Notes.Remove(note);
+                    db.SaveChanges();
+                    return true;
                 }
-                catch
-                {
-                    return false;
-                }
+                return false;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

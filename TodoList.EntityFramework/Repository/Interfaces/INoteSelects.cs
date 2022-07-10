@@ -14,6 +14,7 @@ namespace TodoList.EntityFramework.Repository.Interfaces
         public List<Note> GetNoteByCategoryId(int categoryId);
         public List<Note> GetNoteByUserId(int userId);
         public bool ChangeNote(Note noteNew);
+        public bool ChangeStatusNote(int id, bool status);
         public bool DeleteNoteById(int id);
     }
 }

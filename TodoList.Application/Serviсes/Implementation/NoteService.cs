@@ -12,15 +12,18 @@ using TodoList.Application.Serviсes.Interfaces;
 using TodoList.Common;
 using TodoList.Domain;
 using TodoList.EntityFramework.Repository.Implementation;
+using TodoList.EntityFramework.Repository.Interfaces;
 
 namespace TodoList.Application.Serviсes.Implementation
 {
-    class NoteService : INoteService
+    public class NoteService : INoteService
     {
         IConfiguration _configuration;
+        INoteSelects noteSelects;
         public NoteService(IConfiguration conf)
         {
             _configuration = conf;
+            noteSelects = new NoteSelects();
         }
         public NoteDTO CreateNote(NoteDTO noteDTO)
         {
@@ -33,7 +36,6 @@ namespace TodoList.Application.Serviсes.Implementation
                 Status = false,
                 CategoryId = noteDTO.CategoryId
             };
-            NoteSelects noteSelects = new NoteSelects();
             if (noteSelects.CreateNote(note))
             {
                 noteDTO.Id = note.Id;
@@ -45,7 +47,6 @@ namespace TodoList.Application.Serviсes.Implementation
         }
         public NoteDTO GetNote(int id)
         {
-            NoteSelects noteSelects = new NoteSelects();
             Note note = noteSelects.GetNoteById(id);
             if(note != null)
             {
@@ -65,7 +66,6 @@ namespace TodoList.Application.Serviсes.Implementation
         }
         public List<NoteDTO> GetNoteListByCategoryId(int categoryId)
         {
-            NoteSelects noteSelects = new NoteSelects();
             List<Note> noteList = noteSelects.GetNoteByCategoryId(categoryId);
             if (noteList != null)
             {
@@ -89,10 +89,34 @@ namespace TodoList.Application.Serviсes.Implementation
             }
             return null;
         }
-        public List<NoteDTO> GetNoteListByUserId(string jwt)
+        public List<NoteDTO> GetNoteListByUserJwt(string jwt)
         {
             int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
-            NoteSelects noteSelects = new NoteSelects();
+            List<Note> noteList = noteSelects.GetNoteByUserId(userId);
+            if (noteList != null)
+            {
+                List<NoteDTO> noteListDTO = new List<NoteDTO>();
+                foreach (Note n in noteList)
+                {
+                    NoteDTO nDTO = new NoteDTO()
+                    {
+                        Id = n.Id,
+                        Heading = n.Heading,
+                        Text = n.Text,
+                        CreateDate = n.CreateDate,
+                        Deadline = n.Deadline,
+                        Status = n.Status,
+                        CategoryId = n.CategoryId
+                    };
+                    noteListDTO.Add(nDTO);
+
+                }
+                return noteListDTO;
+            }
+            return null;
+        }
+        public List<NoteDTO> GetNoteListByUserId(int userId)
+        {
             List<Note> noteList = noteSelects.GetNoteByUserId(userId);
             if (noteList != null)
             {
@@ -127,12 +151,15 @@ namespace TodoList.Application.Serviсes.Implementation
                 Status = false,
                 CategoryId = noteDTO.CategoryId
             };
-            NoteSelects noteSelects = new NoteSelects();
             return noteSelects.ChangeNote(note);
         }
+        public bool ChangeStatusNote(int id, bool status)
+        {
+            return noteSelects.ChangeStatusNote(id, status);
+        }
+
         public bool DeleteNote(int id)
         {
-            NoteSelects noteSelects = new NoteSelects();
             return noteSelects.DeleteNoteById(id);
         }
 

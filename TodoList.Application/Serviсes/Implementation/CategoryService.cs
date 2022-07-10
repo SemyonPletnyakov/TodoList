@@ -12,17 +12,20 @@ using TodoList.Application.Serviсes.Interfaces;
 using TodoList.Common;
 using TodoList.Domain;
 using TodoList.EntityFramework.Repository.Implementation;
+using TodoList.EntityFramework.Repository.Interfaces;
 
 namespace TodoList.Application.Serviсes.Implementation
 {
     public class CategoryService : ICategoryService
     {
         IConfiguration _configuration;
+        ICategorySelects categorySelects;
         public CategoryService(IConfiguration conf)
         {
             _configuration = conf;
+            categorySelects = new CategorySelects();
         }
-        public CategoryDTO CreateCategory(CategoryDTO categoryDTO, string jwt)
+        public CategoryDTO CreateCategoryByJwt(CategoryDTO categoryDTO, string jwt)
         {
             int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
             Category category = new Category()
@@ -30,7 +33,6 @@ namespace TodoList.Application.Serviсes.Implementation
                 Name = categoryDTO.Name,
                 UserId = userId
             };
-            CategorySelects categorySelects = new CategorySelects();
             if (categorySelects.CreateCategory(category))
             {
                 categoryDTO.Id = category.Id;
@@ -38,25 +40,39 @@ namespace TodoList.Application.Serviсes.Implementation
             }
             return null;
         }
-
-        public bool ChangeCategory(CategoryDTO categoryDTO)
+        public CategoryDTO CreateCategoryByUserId(CategoryDTO categoryDTO, int userId)
+        {
+            Category category = new Category()
+            {
+                Name = categoryDTO.Name,
+                UserId = userId
+            };
+            if (categorySelects.CreateCategory(category))
+            {
+                categoryDTO.Id = category.Id;
+                return categoryDTO;
+            }
+            return null;
+        }
+        public CategoryDTO ChangeCategory(CategoryDTO categoryDTO)
         {
             Category category = new Category()
             {
                 Name = categoryDTO.Name,
                 Id = categoryDTO.Id
             };
-            CategorySelects categorySelects = new CategorySelects();
-            return categorySelects.ChangeCategory(category);
+            if (categorySelects.ChangeCategory(category))
+            {
+                return categoryDTO;
+            }
+            return null;
         }
         public bool DeleteCategory(int id)
         {
-            CategorySelects categorySelects = new CategorySelects();
             return categorySelects.DeleteCategoryById(id);
         }
         public CategoryDTO GetCategory(int id)
         {
-            CategorySelects categorySelects = new CategorySelects();
             Category category = categorySelects.GetCategoryById(id);
             if (category != null)
             {
@@ -69,10 +85,28 @@ namespace TodoList.Application.Serviсes.Implementation
             }
             return null;
         }
+        public List<CategoryDTO> GetCategotyListByUserId(int userId)
+        {
+            List<Category> categories = categorySelects.GetCategoriesByUserId(userId);
+            if (categories != null)
+            {
+                List<CategoryDTO> categoriesDTO = new List<CategoryDTO>();
+                foreach (Category c in categories)
+                {
+                    CategoryDTO cDTO = new CategoryDTO()
+                    {
+                        Id = c.Id,
+                        Name = c.Name
+                    };
+                    categoriesDTO.Add(cDTO);
+                }
+                return categoriesDTO;
+            }
+            return null;
+        }
         public List<CategoryDTO> GetCategotyListByJwt(string jwt)
         {
             int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
-            CategorySelects categorySelects = new CategorySelects();
             List<Category> categories = categorySelects.GetCategoriesByUserId(userId);
             if (categories != null)
             {

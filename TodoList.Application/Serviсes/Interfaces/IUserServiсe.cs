@@ -5,14 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using TodoList.Application.DTO;
 
-namespace TodoList.Application.Sercises.Interfaces
+namespace TodoList.Application.Serviсes.Interfaces
 {
     public interface IUserServiсe
     {
-        public string LoginUser(string login, string password);
-        public string RegisterUser(UserDTO userDTO);
-        public UserDTO GetUserInfoByJwt(string jwt);
-        public bool ChangeUserByJwt(UserDTO userDTO, string jwt);
-        public bool DeleteUserByJwt(string jwt);
+        public bool AddUser(UserDTO userDTO);
+        public UserDTO GetUserById(int id);
+        public UserDTO ChangeUser(UserDTO userDTO);
+        public bool DeleteUserById(int id);
     }
 }

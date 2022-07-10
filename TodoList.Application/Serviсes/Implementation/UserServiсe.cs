@@ -7,7 +7,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using TodoList.Application.DTO;
-using TodoList.Application.Sercises.Interfaces;
+using TodoList.Application.Serviсes.Interfaces;
 using TodoList.Domain;
 using TodoList.EntityFramework.Repository.Interfaces;
 using TodoList.EntityFramework.Repository.Implementation;
@@ -16,35 +16,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace TodoList.Application.Sercises.Implementation
+namespace TodoList.Application.Serviсes.Implementation
 {
     public class UserServiсe : IUserServiсe
     {
         IConfiguration _configuration;
+        IUserSelects userSelects;
         public UserServiсe(IConfiguration conf)
         {
             _configuration = conf;
+            userSelects = new UserSelects();
         }
-        
-        public string LoginUser(string login, string password)
-        {
-            try
-            {
-                IUserSelects userSelects = new UserSelects();
-                int? userId = userSelects.FindUserIdByLoginAndPassword(login, password);
-                if (userId != null)
-                {
-                    return GetJwtDTOById(userId);
-                }
-                else
-                    return null;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-        public string RegisterUser(UserDTO userDTO)
+        public bool AddUser(UserDTO userDTO)
         {
             try
             {
@@ -55,7 +38,6 @@ namespace TodoList.Application.Sercises.Implementation
                     Email = userDTO.Email,
                     Fio = userDTO.Fio
                 };
-                IUserSelects userSelects = new UserSelects();
                 if (userSelects.CreateUser(user))
                 {
                     int? userId = user.Id;
@@ -68,59 +50,23 @@ namespace TodoList.Application.Sercises.Implementation
                             UserId = userId.Value
                         };
                         categorySelects.CreateCategory(category);
-                        return GetJwtDTOById(userId);
+                        return true;
                     }
                 }
-                return null;
+                return false;
             }
             catch
             {
-                return null;
-            }
-        }
-        private string GetJwtDTOById(int? id)
-        {
-            try
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid", id.ToString())
-                };
-                ClaimsIdentity claimsIdentity =
-                    new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-
-                var autOp = _configuration.GetSection("Auth").Get<AuthOptions>();
-                var now = DateTime.UtcNow;
-                // создаем JWT-токен
-                var jwt = new JwtSecurityToken(
-                        issuer: autOp.Issuer,
-                        audience: autOp.Audience,
-                        notBefore: now,
-                        claims: claimsIdentity.Claims,
-                        expires: now.Add(TimeSpan.FromMinutes(autOp.Lifetime)),
-                        signingCredentials: new SigningCredentials(autOp.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-                var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-                /*JwtDTO response = new JwtDTO()
-                {
-                    access_token = encodedJwt,
-                    username = claimsIdentity.Name
-                };*/
-                return "Bearer " + encodedJwt;
-            }
-            catch
-            {
-                return null;
+                return false;
             }
         }
 
-        public UserDTO GetUserInfoByJwt(string jwt)
+        public UserDTO GetUserById(int id)
         {
-            int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
-            IUserSelects userSelects = new UserSelects();
-            User user = userSelects.GetUserById(userId);
+            User user = userSelects.GetUserById(id);
             UserDTO userDTO = new UserDTO()
             {
+                Id = id,
                 Login = user.Login,
                 Password = user.Password,
                 Email = user.Email,
@@ -128,88 +74,29 @@ namespace TodoList.Application.Sercises.Implementation
             };
             return userDTO;
         }
-        public bool ChangeUserByJwt(UserDTO userDTO, string jwt)
+        public UserDTO ChangeUser(UserDTO userDTO)
         {
-            int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
             User userNew = new User()
             {
-                Id = userId,
+                Id = userDTO.Id,
                 Login = userDTO.Login,
                 Password = userDTO.Password,
                 Email = userDTO.Email,
                 Fio = userDTO.Fio
             };
-            IUserSelects userSelects = new UserSelects();
             if (userSelects.ChangeUser(userNew))
             {
+                return userDTO;
+            }
+            return null;
+        }
+        public bool DeleteUserById(int id)
+        {
+            if (userSelects.DeleteUserById(id))
+            {
                 return true;
             }
             return false;
-        }
-        public bool DeleteUserByJwt(string jwt)
-        {
-            int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
-            IUserSelects userSelects = new UserSelects();
-            if (userSelects.DeleteUserById(userId))
-            {
-                return true;
-            }
-            return false;
-        }
-        private string GetUserIdFromJwt(string jwtString)
-        {
-            try
-            {
-                bool isValid = ValidateToken(jwtString);
-                if (isValid)
-                {
-                    var handler = new JwtSecurityTokenHandler();
-                    var jsonToken = handler.ReadToken(jwtString);
-                    var tokenS = (JwtSecurityToken)jsonToken;
-
-                    var id = tokenS.Claims.
-                        Where(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid").
-                        Select(claim => claim.Value).FirstOrDefault();
-                    return id;
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
-        }
-        private bool ValidateToken(string authToken)
-        {
-            try
-            {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var validationParameters = GetValidationParameters();
-
-                SecurityToken validatedToken;
-                IPrincipal principal = tokenHandler.ValidateToken(authToken, validationParameters, out validatedToken);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-
-        }
-        private TokenValidationParameters GetValidationParameters()
-        {
-            var autOp = _configuration.GetSection("Auth").Get<AuthOptions>();
-
-            return new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = autOp.Issuer,
-                ValidateAudience = true,
-                ValidAudience = autOp.Audience,
-                ValidateLifetime = true,
-                IssuerSigningKey = autOp.GetSymmetricSecurityKey(),
-                ValidateIssuerSigningKey = true,
-            };
         }
     }
 }

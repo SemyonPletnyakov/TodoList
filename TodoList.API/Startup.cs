@@ -15,8 +15,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using TodoList.Application.Sercises.Implementation;
-using TodoList.Application.Sercises.Interfaces;
+using TodoList.Application.Serviñes.Implementation;
+using TodoList.Application.Serviñes.Interfaces;
 using TodoList.Common;
 
 namespace TodoList.API
@@ -102,6 +102,8 @@ namespace TodoList.API
             });
 
             services.AddTransient<IUserServiñe, UserServiñe>();
+            services.AddTransient<ICategoryService, CategoryService>();
+            services.AddTransient<INoteService, NoteService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
