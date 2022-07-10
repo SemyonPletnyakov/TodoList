@@ -27,133 +27,176 @@ namespace TodoList.Application.Serviсes.Implementation
         }
         public NoteDTO CreateNote(NoteDTO noteDTO)
         {
-            Note note = new Note()
+            try
             {
-                Heading = noteDTO.Heading,
-                Text = noteDTO.Text,
-                CreateDate = DateTime.Now,
-                Deadline = noteDTO.Deadline,
-                Status = false,
-                CategoryId = noteDTO.CategoryId
-            };
-            if (noteSelects.CreateNote(note))
-            {
-                noteDTO.Id = note.Id;
-                noteDTO.CreateDate = note.CreateDate;
-                noteDTO.Status = note.Status;
-                return noteDTO;
+                Note note = new Note()
+                {
+                    Heading = noteDTO.Heading,
+                    Text = noteDTO.Text,
+                    CreateDate = DateTime.Now,
+                    Deadline = noteDTO.Deadline,
+                    Status = false,
+                    CategoryId = noteDTO.CategoryId
+                };
+                if (noteSelects.CreateNote(note))
+                {
+                    noteDTO.Id = note.Id;
+                    noteDTO.CreateDate = note.CreateDate;
+                    noteDTO.Status = note.Status;
+                    return noteDTO;
+                }
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public NoteDTO GetNote(int id)
         {
-            Note note = noteSelects.GetNoteById(id);
-            if(note != null)
+            try
             {
-                NoteDTO noteDTO = new NoteDTO()
+                Note note = noteSelects.GetNoteById(id);
+                if (note != null)
                 {
-                    Id = note.Id,
-                    Heading = note.Heading,
-                    Text = note.Text,
-                    CreateDate = note.CreateDate,
-                    Deadline = note.Deadline,
-                    Status = note.Status,
-                    CategoryId = note.CategoryId
-                };
-                return noteDTO;
+                    NoteDTO noteDTO = new NoteDTO()
+                    {
+                        Id = note.Id,
+                        Heading = note.Heading,
+                        Text = note.Text,
+                        CreateDate = note.CreateDate,
+                        Deadline = note.Deadline,
+                        Status = note.Status,
+                        CategoryId = note.CategoryId
+                    };
+                    return noteDTO;
+                }
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public List<NoteDTO> GetNoteListByCategoryId(int categoryId)
         {
-            List<Note> noteList = noteSelects.GetNoteByCategoryId(categoryId);
-            if (noteList != null)
+            try
             {
-                List<NoteDTO> noteListDTO = new List<NoteDTO>();
-                foreach(Note n in noteList)
+                List<Note> noteList = noteSelects.GetNoteByCategoryId(categoryId);
+                if (noteList != null)
                 {
-                    NoteDTO nDTO = new NoteDTO()
+                    List<NoteDTO> noteListDTO = new List<NoteDTO>();
+                    foreach (Note n in noteList)
                     {
-                        Id = n.Id,
-                        Heading = n.Heading,
-                        Text = n.Text,
-                        CreateDate = n.CreateDate,
-                        Deadline = n.Deadline,
-                        Status = n.Status,
-                        CategoryId = n.CategoryId
-                    };
-                    noteListDTO.Add(nDTO);
+                        NoteDTO nDTO = new NoteDTO()
+                        {
+                            Id = n.Id,
+                            Heading = n.Heading,
+                            Text = n.Text,
+                            CreateDate = n.CreateDate,
+                            Deadline = n.Deadline,
+                            Status = n.Status,
+                            CategoryId = n.CategoryId
+                        };
+                        noteListDTO.Add(nDTO);
 
+                    }
+                    return noteListDTO;
                 }
-                return noteListDTO;
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public List<NoteDTO> GetNoteListByUserJwt(string jwt)
         {
-            int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
-            List<Note> noteList = noteSelects.GetNoteByUserId(userId);
-            if (noteList != null)
+            try
             {
-                List<NoteDTO> noteListDTO = new List<NoteDTO>();
-                foreach (Note n in noteList)
+                int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
+                List<Note> noteList = noteSelects.GetNoteByUserId(userId);
+                if (noteList != null)
                 {
-                    NoteDTO nDTO = new NoteDTO()
+                    List<NoteDTO> noteListDTO = new List<NoteDTO>();
+                    foreach (Note n in noteList)
                     {
-                        Id = n.Id,
-                        Heading = n.Heading,
-                        Text = n.Text,
-                        CreateDate = n.CreateDate,
-                        Deadline = n.Deadline,
-                        Status = n.Status,
-                        CategoryId = n.CategoryId
-                    };
-                    noteListDTO.Add(nDTO);
+                        NoteDTO nDTO = new NoteDTO()
+                        {
+                            Id = n.Id,
+                            Heading = n.Heading,
+                            Text = n.Text,
+                            CreateDate = n.CreateDate,
+                            Deadline = n.Deadline,
+                            Status = n.Status,
+                            CategoryId = n.CategoryId
+                        };
+                        noteListDTO.Add(nDTO);
 
+                    }
+                    return noteListDTO;
                 }
-                return noteListDTO;
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public List<NoteDTO> GetNoteListByUserId(int userId)
         {
-            List<Note> noteList = noteSelects.GetNoteByUserId(userId);
-            if (noteList != null)
+            try
             {
-                List<NoteDTO> noteListDTO = new List<NoteDTO>();
-                foreach (Note n in noteList)
+                List<Note> noteList = noteSelects.GetNoteByUserId(userId);
+                if (noteList != null)
                 {
-                    NoteDTO nDTO = new NoteDTO()
+                    List<NoteDTO> noteListDTO = new List<NoteDTO>();
+                    foreach (Note n in noteList)
                     {
-                        Id = n.Id,
-                        Heading = n.Heading,
-                        Text = n.Text,
-                        CreateDate = n.CreateDate,
-                        Deadline = n.Deadline,
-                        Status = n.Status,
-                        CategoryId = n.CategoryId
-                    };
-                    noteListDTO.Add(nDTO);
+                        NoteDTO nDTO = new NoteDTO()
+                        {
+                            Id = n.Id,
+                            Heading = n.Heading,
+                            Text = n.Text,
+                            CreateDate = n.CreateDate,
+                            Deadline = n.Deadline,
+                            Status = n.Status,
+                            CategoryId = n.CategoryId
+                        };
+                        noteListDTO.Add(nDTO);
 
+                    }
+                    return noteListDTO;
                 }
-                return noteListDTO;
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public NoteDTO ChangeNote(NoteDTO noteDTO)
         {
-            Note note = new Note()
+            try
             {
-                Heading = noteDTO.Heading,
-                Text = noteDTO.Text,
-                CreateDate = DateTime.Now,
-                Deadline = noteDTO.Deadline,
-                Status = false,
-                CategoryId = noteDTO.CategoryId
-            };
-            if(noteSelects.ChangeNote(note))
-                return noteDTO;
-            return null;
+                Note note = new Note()
+                {
+                    Id = noteDTO.Id,
+                    Heading = noteDTO.Heading,
+                    Text = noteDTO.Text,
+                    CreateDate = DateTime.Now,
+                    Deadline = noteDTO.Deadline,
+                    Status = false,
+                    CategoryId = noteDTO.CategoryId
+                };
+                if (noteSelects.ChangeNote(note))
+                    return noteDTO;
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
         }
         public bool ChangeStatusNote(int id, bool status)
         {

@@ -82,33 +82,47 @@ namespace TodoList.Application.Serviсes.Implementation
 
         public AccountDTO GetAccountInfoByJwt(string jwt)
         {
-            int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
-            User user = userSelects.GetUserById(userId);
-            AccountDTO accountDTO = new AccountDTO()
+            try
             {
-                Login = user.Login,
-                Password = user.Password,
-                Email = user.Email,
-                Fio = user.Fio
-            };
-            return accountDTO;
+                int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
+                User user = userSelects.GetUserById(userId);
+                AccountDTO accountDTO = new AccountDTO()
+                {
+                    Login = user.Login,
+                    Password = user.Password,
+                    Email = user.Email,
+                    Fio = user.Fio
+                };
+                return accountDTO;
+            }
+            catch
+            {
+                return null;
+            }
         }
         public AccountDTO ChangeAccountInfoByJwt(AccountDTO accountDTO, string jwt)
         {
-            int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
-            User userNew = new User()
+            try
             {
-                Id = userId,
-                Login = accountDTO.Login,
-                Password = accountDTO.Password,
-                Email = accountDTO.Email,
-                Fio = accountDTO.Fio
-            };
-            if (userSelects.ChangeUser(userNew))
-            {
-                return accountDTO;
+                int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
+                User userNew = new User()
+                {
+                    Id = userId,
+                    Login = accountDTO.Login,
+                    Password = accountDTO.Password,
+                    Email = accountDTO.Email,
+                    Fio = accountDTO.Fio
+                };
+                if (userSelects.ChangeUser(userNew))
+                {
+                    return accountDTO;
+                }
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public bool DeleteAccountInfoByJwt(string jwt)
         {

@@ -28,14 +28,14 @@ namespace TodoList.API.Controllers
             return Json(_noteServise.GetNote(id));
         }
         [Authorize]
-        [HttpGet("Category/{id}")]
+        [HttpGet("Category/{categoryId}")]
         public async Task<IActionResult> GetNoteListByCategoryId(int categoryId)
         {
             return Json(_noteServise.GetNoteListByCategoryId(categoryId));
         }
         //для админов
         [Authorize]
-        [HttpGet("User/{id}")]
+        [HttpGet("User/{userId}")]
         public async Task<IActionResult> GetNoteListByUserId(int userId)
         {
             return Json(_noteServise.GetNoteListByUserId(userId));

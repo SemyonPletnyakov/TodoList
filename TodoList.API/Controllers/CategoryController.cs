@@ -29,10 +29,10 @@ namespace TodoList.API.Controllers
         }
         //для админов
         [Authorize]
-        [HttpGet("User/{id}")]
-        public async Task<IActionResult> GetCategoryListByUserId(int id)
+        [HttpGet("User/{userId}")]
+        public async Task<IActionResult> GetCategoryListByUserId(int userId)
         {
-            return Json(_catServise.GetCategory(id));
+            return Json(_catServise.GetCategotyListByUserId(userId));
         }
         [Authorize]
         [HttpGet]
@@ -50,7 +50,7 @@ namespace TodoList.API.Controllers
         }
         //для админов
         [Authorize]
-        [HttpPost("{id}")]
+        [HttpPost("{userId}")]
         public async Task<IActionResult> CreateCategoryByUserId(CategoryDTO categoryDTO, int userId)
         {
             return Json(_catServise.CreateCategoryByUserId(categoryDTO, userId));

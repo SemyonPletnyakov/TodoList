@@ -63,32 +63,46 @@ namespace TodoList.Application.Serviсes.Implementation
 
         public UserDTO GetUserById(int id)
         {
-            User user = userSelects.GetUserById(id);
-            UserDTO userDTO = new UserDTO()
+            try
             {
-                Id = id,
-                Login = user.Login,
-                Password = user.Password,
-                Email = user.Email,
-                Fio = user.Fio
-            };
-            return userDTO;
+                User user = userSelects.GetUserById(id);
+                UserDTO userDTO = new UserDTO()
+                {
+                    Id = id,
+                    Login = user.Login,
+                    Password = user.Password,
+                    Email = user.Email,
+                    Fio = user.Fio
+                };
+                return userDTO;
+            }
+            catch
+            {
+                return null;
+            }
         }
         public UserDTO ChangeUser(UserDTO userDTO)
         {
-            User userNew = new User()
+            try
             {
-                Id = userDTO.Id,
-                Login = userDTO.Login,
-                Password = userDTO.Password,
-                Email = userDTO.Email,
-                Fio = userDTO.Fio
-            };
-            if (userSelects.ChangeUser(userNew))
-            {
-                return userDTO;
+                User userNew = new User()
+                {
+                    Id = userDTO.Id,
+                    Login = userDTO.Login,
+                    Password = userDTO.Password,
+                    Email = userDTO.Email,
+                    Fio = userDTO.Fio
+                };
+                if (userSelects.ChangeUser(userNew))
+                {
+                    return userDTO;
+                }
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public bool DeleteUserById(int id)
         {

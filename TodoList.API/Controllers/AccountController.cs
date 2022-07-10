@@ -42,7 +42,7 @@ namespace TodoList.API.Controllers
         }
         [Authorize]
         [HttpDelete]
-        public async Task<IActionResult> DeleteAccount(AccountDTO accountDTO)
+        public async Task<IActionResult> DeleteAccount()
         {
             var jwt = Request.Headers.GetJwt();
             return Json(_accServise.DeleteAccountInfoByJwt(jwt));

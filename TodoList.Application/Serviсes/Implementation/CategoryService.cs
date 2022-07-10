@@ -27,45 +27,66 @@ namespace TodoList.Application.Serviсes.Implementation
         }
         public CategoryDTO CreateCategoryByJwt(CategoryDTO categoryDTO, string jwt)
         {
-            int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
-            Category category = new Category()
+            try
             {
-                Name = categoryDTO.Name,
-                UserId = userId
-            };
-            if (categorySelects.CreateCategory(category))
-            {
-                categoryDTO.Id = category.Id;
-                return categoryDTO;
+                int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
+                Category category = new Category()
+                {
+                    Name = categoryDTO.Name,
+                    UserId = userId
+                };
+                if (categorySelects.CreateCategory(category))
+                {
+                    categoryDTO.Id = category.Id;
+                    return categoryDTO;
+                }
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public CategoryDTO CreateCategoryByUserId(CategoryDTO categoryDTO, int userId)
         {
-            Category category = new Category()
+            try
             {
-                Name = categoryDTO.Name,
-                UserId = userId
-            };
-            if (categorySelects.CreateCategory(category))
-            {
-                categoryDTO.Id = category.Id;
-                return categoryDTO;
+                Category category = new Category()
+                {
+                    Name = categoryDTO.Name,
+                    UserId = userId
+                };
+                if (categorySelects.CreateCategory(category))
+                {
+                    categoryDTO.Id = category.Id;
+                    return categoryDTO;
+                }
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public CategoryDTO ChangeCategory(CategoryDTO categoryDTO)
         {
-            Category category = new Category()
+            try
             {
-                Name = categoryDTO.Name,
-                Id = categoryDTO.Id
-            };
-            if (categorySelects.ChangeCategory(category))
-            {
-                return categoryDTO;
+                Category category = new Category()
+                {
+                    Name = categoryDTO.Name,
+                    Id = categoryDTO.Id
+                };
+                if (categorySelects.ChangeCategory(category))
+                {
+                    return categoryDTO;
+                }
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public bool DeleteCategory(int id)
         {
@@ -73,56 +94,77 @@ namespace TodoList.Application.Serviсes.Implementation
         }
         public CategoryDTO GetCategory(int id)
         {
-            Category category = categorySelects.GetCategoryById(id);
-            if (category != null)
+            try
             {
-                CategoryDTO categoryDTO = new CategoryDTO()
+                Category category = categorySelects.GetCategoryById(id);
+                if (category != null)
                 {
-                    Id = category.Id,
-                    Name = category.Name
-                };
-                return categoryDTO;
+                    CategoryDTO categoryDTO = new CategoryDTO()
+                    {
+                        Id = category.Id,
+                        Name = category.Name
+                    };
+                    return categoryDTO;
+                }
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public List<CategoryDTO> GetCategotyListByUserId(int userId)
         {
-            List<Category> categories = categorySelects.GetCategoriesByUserId(userId);
-            if (categories != null)
+            try
             {
-                List<CategoryDTO> categoriesDTO = new List<CategoryDTO>();
-                foreach (Category c in categories)
+                List<Category> categories = categorySelects.GetCategoriesByUserId(userId);
+                if (categories != null)
                 {
-                    CategoryDTO cDTO = new CategoryDTO()
+                    List<CategoryDTO> categoriesDTO = new List<CategoryDTO>();
+                    foreach (Category c in categories)
                     {
-                        Id = c.Id,
-                        Name = c.Name
-                    };
-                    categoriesDTO.Add(cDTO);
+                        CategoryDTO cDTO = new CategoryDTO()
+                        {
+                            Id = c.Id,
+                            Name = c.Name
+                        };
+                        categoriesDTO.Add(cDTO);
+                    }
+                    return categoriesDTO;
                 }
-                return categoriesDTO;
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
         public List<CategoryDTO> GetCategotyListByJwt(string jwt)
         {
-            int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
-            List<Category> categories = categorySelects.GetCategoriesByUserId(userId);
-            if (categories != null)
+            try
             {
-                List<CategoryDTO> categoriesDTO = new List<CategoryDTO>();
-                foreach (Category c in categories)
+                int userId = Convert.ToInt32(GetUserIdFromJwt(jwt));
+                List<Category> categories = categorySelects.GetCategoriesByUserId(userId);
+                if (categories != null)
                 {
-                    CategoryDTO cDTO = new CategoryDTO()
+                    List<CategoryDTO> categoriesDTO = new List<CategoryDTO>();
+                    foreach (Category c in categories)
                     {
-                        Id = c.Id,
-                        Name = c.Name
-                    };
-                    categoriesDTO.Add(cDTO);
+                        CategoryDTO cDTO = new CategoryDTO()
+                        {
+                            Id = c.Id,
+                            Name = c.Name
+                        };
+                        categoriesDTO.Add(cDTO);
+                    }
+                    return categoriesDTO;
                 }
-                return categoriesDTO;
+                return null;
             }
-            return null;
+            catch
+            {
+                return null;
+            }
         }
 
         private string GetUserIdFromJwt(string jwtString)

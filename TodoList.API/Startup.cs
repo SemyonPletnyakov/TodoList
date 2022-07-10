@@ -104,6 +104,7 @@ namespace TodoList.API
             services.AddTransient<IUserServiñe, UserServiñe>();
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddTransient<INoteService, NoteService>();
+            services.AddTransient<IAccountService, AccountService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
